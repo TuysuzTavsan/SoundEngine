@@ -143,9 +143,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Src\SoundEngine.cpp" />
+    <ClCompile Include="Src\audioLoader.cpp" />
+    <ClCompile Include="Src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Headers\audioLoader.h" />
+    <ClInclude Include="Headers\utility.h" />
     <ClInclude Include="Headers\wav.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

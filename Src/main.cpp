@@ -1,6 +1,7 @@
 #include <iostream>
 #include <PortAudio/portaudio.h>
 #include <string>
+#include <audioLoader.h>
 
 void Pa_Log(const PaError& err)
 {
@@ -45,6 +46,22 @@ int main()
         Pa_Log(err);
         return -1;
     }
+
+
+
+    wavFile* wav = AudioLoader::Loadwav("Resources/example.wav");
+
+
+
+
+
+
+
+
+
+
+
+
 
     return 0;
 }
