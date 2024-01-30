@@ -6,7 +6,7 @@
 wavFile* AudioLoader::Loadwav(const char* path)
 {
 	std::ifstream file;
-	file.open("Resources/example.wav", std::ios::in | std::ios::binary);
+	file.open(path, std::ios::in | std::ios::binary);
 
 
 	if (!file.is_open())
@@ -50,8 +50,21 @@ wavFile* AudioLoader::Loadwav(const char* path)
 
 	//TODO CHECK FOR VALID FORMAT CHUNK
 
-	//Read Data chunk
+	//FIND "DATA" string literal
+	unsigned int dataOffSet = 0;
+
+findData:
 	file.read(wav->data.SubChunk2ID, 4);
+	dataOffSet ++;
+	if (std::string{ wav->data.SubChunk2ID, 4 } != "data")
+	{
+		file.seekg(-3, std::ios::cur);
+		goto findData;
+	}
+
+
+	//Read Data chunk
+	//file.read(wav->data.SubChunk2ID, 4);
 	file.read(reinterpret_cast<char*>(&wav->data.SubChunk2Size), 4);
 	
 	//allocate memory and read
