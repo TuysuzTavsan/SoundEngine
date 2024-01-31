@@ -16,7 +16,14 @@ static int patestCallback(const void* inputBuffer, void* outputBuffer,
     PaStreamCallbackFlags statusFlags,
     void* userData);
 
-wavFile* wav = nullptr;
+wavFile* wav1 = nullptr;
+wavFile* wav2 = nullptr;
+
+struct SampleBuffer
+{
+    wavFile* wav1 = nullptr;
+    wavFile* wav2 = nullptr;
+};
 
 int main()
 {
@@ -47,8 +54,12 @@ int main()
 
     
 
-    wav = AudioLoader::Loadwav("Resources/DoctorWho.wav");
-        
+    wav1 = AudioLoader::Loadwav("Resources/Priestess.wav");
+    wav2 = AudioLoader::Loadwav("Resources/DoctorWho.wav");
+    SampleBuffer buffer;
+    buffer.wav1 = wav1;
+    buffer.wav2 = wav2;
+
     PaStream* stream;
 
     /* Open an audio I/O stream. */
@@ -56,10 +67,10 @@ int main()
         0,
         2,
         paInt16,
-        wav->format.SampleRate,
+        wav1->format.SampleRate,
         paFramesPerBufferUnspecified,
         patestCallback,
-        wav->data.Data
+        &buffer
     );
     if (err != paNoError)
     {
@@ -115,8 +126,8 @@ static int patestCallback(const void* inputBuffer, void* outputBuffer,
     PaStreamCallbackFlags statusFlags,
     void* userData)
 {
-    char* data = (char*)userData;
-    std::int16_t* out = (std::int16_t*)outputBuffer;
+    SampleBuffer* data = (SampleBuffer*)userData;
+    char* out = (char*)outputBuffer;
 
     (void)timeInfo; /* Prevent unused variable warnings. */
     (void)statusFlags;
@@ -133,7 +144,7 @@ static int patestCallback(const void* inputBuffer, void* outputBuffer,
 
     //    index += 4;
     //}
-    if (framesPerBuffer * 2 * 2 > wav->data.SubChunk2Size)
+    /*if (framesPerBuffer * 2 * 2 > wav->data.SubChunk2Size)
     {
         std::memcpy(out, &data[index], wav->data.SubChunk2Size - framesPerBuffer * 2 * 2);
         return paComplete;
@@ -141,15 +152,29 @@ static int patestCallback(const void* inputBuffer, void* outputBuffer,
     else
     {
         std::memcpy(out, &data[index], framesPerBuffer * 2 * 2);
+    }*/
+
+    
+
+    for (unsigned long i = 0; i < framesPerBuffer; i++)
+    {
+        if (index >= data->wav1->data.SubChunk2Size || index >= data->wav2->data.SubChunk2Size)
+        {
+            return paComplete;
+        }
+        *out++ = static_cast<short>(((static_cast<char>( data->wav1->data.Data[index    ] )) + ( static_cast<char>( data->wav2->data.Data[index    ] )) ) )>> 1;
+        *out++ = static_cast<short>(((static_cast<char>( data->wav1->data.Data[index + 1] )) + ( static_cast<char>( data->wav2->data.Data[index + 1] )) ) )>> 1;
+        *out++ = static_cast<short>(((static_cast<char>( data->wav1->data.Data[index + 2] )) + ( static_cast<char>( data->wav2->data.Data[index + 2] )) ) )>> 1;
+        *out++ = static_cast<short>(((static_cast<char>( data->wav1->data.Data[index + 3] )) + ( static_cast<char>( data->wav2->data.Data[index + 3] )) ) )>> 1;
+        index += 4;                                                                            
+
+
     }
  
-    index += framesPerBuffer * 2 * 2;
+    //index += framesPerBuffer * 2 * 2;
 
 
-    if (index >= wav->data.SubChunk2Size)
-    {
-        return paComplete;
-    }
+    
 
     return paContinue;
 }
