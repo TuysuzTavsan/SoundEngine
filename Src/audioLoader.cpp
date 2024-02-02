@@ -68,8 +68,8 @@ findData:
 	file.read(reinterpret_cast<char*>(&wav->data.SubChunk2Size), 4);
 	
 	//allocate memory and read
-	wav->data.Data = new char[wav->data.SubChunk2Size];
-	file.read(wav->data.Data, wav->data.SubChunk2Size);
+	wav->data.Data = new std::int16_t[wav->data.SubChunk2Size];
+	file.read(reinterpret_cast<char*>(wav->data.Data), wav->data.SubChunk2Size);
 
 
 	

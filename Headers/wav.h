@@ -117,7 +117,7 @@ struct dataChunk
                                You can also think of this as the size
                                of the read of the subchunk following this 
                                number.*/
-    mchar* Data;                // The actual sound Data.
+    int16_t* Data;                // The actual sound Data.
 
     //initialize as zero.
     dataChunk()

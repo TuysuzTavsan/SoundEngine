@@ -54,7 +54,7 @@ int main()
 
     
 
-    wav1 = AudioLoader::Loadwav("Resources/Priestess.wav");
+    wav1 = AudioLoader::Loadwav("Resources/Scargazer.wav"); // Priestess
     wav2 = AudioLoader::Loadwav("Resources/DoctorWho.wav");
     SampleBuffer buffer;
     buffer.wav1 = wav1;
@@ -127,47 +127,25 @@ static int patestCallback(const void* inputBuffer, void* outputBuffer,
     void* userData)
 {
     SampleBuffer* data = (SampleBuffer*)userData;
-    char* out = (char*)outputBuffer;
+    std::int16_t* out = (std::int16_t*)outputBuffer;
 
     (void)timeInfo; /* Prevent unused variable warnings. */
     (void)statusFlags;
     (void)inputBuffer;
 
-    //for (unsigned long i = 0; i < framesPerBuffer; i++)
-    //{
-
-    //    std::int16_t left = (std::int16_t(data[index+1]) << 8) | std::int16_t(data[index]);
-    //    std::int16_t right = (std::int16_t(data[index+3]) << 8) | std::int16_t(data[index + 2]);
-
-    //    *out++ = left;
-    //    *out++ = right;
-
-    //    index += 4;
-    //}
-    /*if (framesPerBuffer * 2 * 2 > wav->data.SubChunk2Size)
-    {
-        std::memcpy(out, &data[index], wav->data.SubChunk2Size - framesPerBuffer * 2 * 2);
-        return paComplete;
-    }
-    else
-    {
-        std::memcpy(out, &data[index], framesPerBuffer * 2 * 2);
-    }*/
-
-    
-
     for (unsigned long i = 0; i < framesPerBuffer; i++)
     {
-        if (index >= data->wav1->data.SubChunk2Size || index >= data->wav2->data.SubChunk2Size)
+        if (index >= data->wav1->data.SubChunk2Size / 2 || index >= data->wav2->data.SubChunk2Size / 2)
         {
             return paComplete;
         }
-        *out++ = static_cast<short>(((static_cast<char>( data->wav1->data.Data[index    ] )) + ( static_cast<char>( data->wav2->data.Data[index    ] )) ) )>> 1;
-        *out++ = static_cast<short>(((static_cast<char>( data->wav1->data.Data[index + 1] )) + ( static_cast<char>( data->wav2->data.Data[index + 1] )) ) )>> 1;
-        *out++ = static_cast<short>(((static_cast<char>( data->wav1->data.Data[index + 2] )) + ( static_cast<char>( data->wav2->data.Data[index + 2] )) ) )>> 1;
-        *out++ = static_cast<short>(((static_cast<char>( data->wav1->data.Data[index + 3] )) + ( static_cast<char>( data->wav2->data.Data[index + 3] )) ) )>> 1;
-        index += 4;                                                                            
 
+
+        *out++ = (data->wav1->data.Data[index] * 0.3) + (data->wav2->data.Data[index] * 0.6f);
+        *out++ = (data->wav1->data.Data[index + 1] * 0.3) + (data->wav2->data.Data[index + 1] * 0.6f);
+        
+        index += 2;
+        
 
     }
  
