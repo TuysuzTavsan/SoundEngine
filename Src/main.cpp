@@ -2,6 +2,7 @@
 #include <PortAudio/portaudio.h>
 #include <string>
 #include <audioLoader.h>
+#include <audioFile.h>
 
 void Pa_Log(const PaError& err)
 {
@@ -16,15 +17,15 @@ static int patestCallback(const void* inputBuffer, void* outputBuffer,
     PaStreamCallbackFlags statusFlags,
     void* userData);
 
-wavFile* wav1 = nullptr;
-wavFile* wav2 = nullptr;
+AudioFile* wav1 = nullptr;
+AudioFile* wav2 = nullptr;
 
 struct SampleBuffer
 {
-    wavFile* wav1 = nullptr;
-    wavFile* wav2 = nullptr;
+    AudioFile* wav1 = nullptr;
+    AudioFile* wav2 = nullptr;
 };
-
+    
 int main()
 {
     std::cout << "Hello World!\n";
@@ -54,8 +55,8 @@ int main()
 
     
 
-    wav1 = AudioLoader::Loadwav("Resources/Scargazer.wav"); // Priestess
-    wav2 = AudioLoader::Loadwav("Resources/DoctorWho.wav");
+    wav1 = AudioLoader::Loadwav("Resources/DoctorWho.wav"); // Priestess
+    wav2 = AudioLoader::Loadwav("Resources/Priestess.wav");
     SampleBuffer buffer;
     buffer.wav1 = wav1;
     buffer.wav2 = wav2;
@@ -67,7 +68,7 @@ int main()
         0,
         2,
         paInt16,
-        wav1->format.SampleRate,
+        wav1->sampleRate,
         paFramesPerBufferUnspecified,
         patestCallback,
         &buffer
@@ -88,7 +89,7 @@ int main()
     }
 
     /* Sleep for 3 seconds. */
-    Pa_Sleep(160000);
+    Pa_Sleep(160000000);
 
     err = Pa_StopStream(stream);
     if (err != paNoError)
@@ -135,14 +136,16 @@ static int patestCallback(const void* inputBuffer, void* outputBuffer,
 
     for (unsigned long i = 0; i < framesPerBuffer; i++)
     {
-        if (index >= data->wav1->data.SubChunk2Size / 2 || index >= data->wav2->data.SubChunk2Size / 2)
+        if (index >= data->wav1->dataSize / 2 || index >= data->wav2->dataSize / 2)
         {
-            return paComplete;
+            index = 0;
         }
 
+        std::memcpy(out++, data->wav1->data.get() + index * 2, data->wav1->bitsPerSample / 8);
+        std::memcpy(out++, data->wav1->data.get() + index * 2, data->wav1->bitsPerSample / 8);
 
-        *out++ = (data->wav1->data.Data[index] * 0.3) + (data->wav2->data.Data[index] * 0.6f);
-        *out++ = (data->wav1->data.Data[index + 1] * 0.3) + (data->wav2->data.Data[index + 1] * 0.6f);
+        /**out++ = (data->wav1->data.get()[index] * 0.0) + (data->wav2->data.get()[index] * 0.6f);
+        *out++ = (data->wav1->data.get()[index + 1] * 0.0) + (data->wav2->data.get()[index + 1] * 0.6f);*/
         
         index += 2;
         

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <memory>
 
 // reference: http://soundfile.sapp.org/doc/WaveFormat/
 // reference : https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
@@ -13,9 +14,6 @@ Format Information:
 
 */
 
-// std::uint8_t ??????
-typedef char mchar;
-
 #define WAVE_FORMAT_PCM 0x0001
 #define WAVE_FORMAT_IEEE_FLOAT 0x0003
 #define WAVE_FORMAT_ALAW 0x0006
@@ -24,13 +22,13 @@ typedef char mchar;
 
 struct Riff
 {
-    mchar ChunkID[4];       // Contains "RIFF" in ASCII (0x52494646 big-endian form).
+    char ChunkID[4];       // Contains "RIFF" in ASCII (0x52494646 big-endian form).
     std::uint32_t ChunkSize;     /* This is the size of the rest of the chunk
                              following this number.  This is the size of the
                              entire file in bytes minus 8 bytes for the
                              two fields not included in this count:
                              ChunkID and ChunkSize.*/
-    mchar Format[4];        // Contains "WAVE" in ASCII 
+    char Format[4];        // Contains "WAVE" in ASCII 
 
 
     //initialize as zero always.
@@ -57,7 +55,7 @@ struct Riff
 
 struct fmtChunk
 {
-    mchar ChunkID[4];                 // Contains "fmt " (0x666d7420 big-endian form).
+    char ChunkID[4];                 // Contains "fmt " (0x666d7420 big-endian form).
     std::uint32_t ChunkSize;              /*16 for PCM.  This is the size of the
                                       rest of the Subchunk which follows this number.*/
     std::uint16_t AudioFormat;            /*PCM = 1 (i.e. Linear quantization)
@@ -74,7 +72,7 @@ struct fmtChunk
     std::uint16_t ExtansionChunkSize;    //Size of the extension. If PCM then doesn't exist. 0 or 22.
     std::uint16_t ValidBitsPerSample;    //Number of valid bits.
     std::uint32_t ChannelMask;           //Speaker position mask
-    mchar SubFormat[16];            //GUID, including the data format code
+    char SubFormat[16];            //GUID, including the data format code
 
     //initialize as zero.
     fmtChunk()
@@ -111,13 +109,13 @@ struct fmtChunk
 
 struct dataChunk
 {
-    mchar SubChunk2ID[4];       // Contains the letters "data" (0x64617461 big-endian form).
+    char SubChunk2ID[4];       // Contains the letters "data" (0x64617461 big-endian form).
     std::uint32_t SubChunk2Size;     /*== NumSamples * NumChannels * BitsPerSample/8
                                This is the number of bytes in the data.
                                You can also think of this as the size
                                of the read of the subchunk following this 
                                number.*/
-    int16_t* Data;                // The actual sound Data.
+    std::unique_ptr<std::byte> Data;     // The actual sound Data.
 
     //initialize as zero.
     dataChunk()
@@ -128,6 +126,7 @@ struct dataChunk
     {
 
     }
+
 };
 
 struct wavFile

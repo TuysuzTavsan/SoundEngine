@@ -1,9 +1,14 @@
 #include <iostream>
 #include <fstream>
 #include <audioLoader.h>
+#include <audioFile.h>
 #include <utility.h>
 
-wavFile* AudioLoader::Loadwav(const char* path)
+/*
+Function will load and return a pointer to the generic AudioFile struct.
+if loading fails for any reason it will return nullptr.
+*/
+AudioFile* AudioLoader::Loadwav(const char* path)
 {
 	std::ifstream file;
 	file.open(path, std::ios::in | std::ios::binary);
@@ -15,7 +20,7 @@ wavFile* AudioLoader::Loadwav(const char* path)
 		return nullptr;
 	}
 
-	wavFile* wav = new wavFile();
+	std::unique_ptr<wavFile> wav(new wavFile);
 	
 	//Read header info.
 	file.read(wav->header.ChunkID, 4);
@@ -25,7 +30,7 @@ wavFile* AudioLoader::Loadwav(const char* path)
 	//check the header id format and size
 	if (!wav->header.isValid())
 	{
-		delete wav;
+		//error
 		return nullptr;
 	}
 
@@ -68,19 +73,19 @@ findData:
 	file.read(reinterpret_cast<char*>(&wav->data.SubChunk2Size), 4);
 	
 	//allocate memory and read
-	wav->data.Data = new std::int16_t[wav->data.SubChunk2Size];
-	file.read(reinterpret_cast<char*>(wav->data.Data), wav->data.SubChunk2Size);
+	wav->data.Data = std::unique_ptr<std::byte>(new std::byte[wav->data.SubChunk2Size]);
+	file.read(reinterpret_cast<char*>(wav->data.Data.get()), wav->data.SubChunk2Size);
 
-
-	
-
-	
-
-
+	// Reading is over close the file.
 	file.close();
 
-	//success
-	return wav;
+	// load wav file info to the generic AudioFile.
+	AudioFile* audio = new AudioFile(wav->format.NumChannels,
+		wav->format.SampleRate,
+		wav->format.BitsPerSample,
+		wav->data.SubChunk2Size,
+		wav->data.Data);
 
+	return audio;
 
 }

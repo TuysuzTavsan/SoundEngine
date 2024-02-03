@@ -147,6 +147,7 @@
     <ClCompile Include="Src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Headers\audioFile.h" />
     <ClInclude Include="Headers\audioLoader.h" />
     <ClInclude Include="Headers\utility.h" />
     <ClInclude Include="Headers\wav.h" />

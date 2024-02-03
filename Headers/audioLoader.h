@@ -1,9 +1,10 @@
 #pragma once
 #include <wav.h>
+#include <audioFile.h>
 
 class AudioLoader
 {
 public:
-	static wavFile* Loadwav(const char* path);
+	static AudioFile* Loadwav(const char* path);
 	
 };
