@@ -35,5 +35,8 @@
     <ClInclude Include="Headers\audioFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\ringBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
