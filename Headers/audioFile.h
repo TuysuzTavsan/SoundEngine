@@ -43,4 +43,17 @@ struct AudioFile {
 	{
 		data = std::move(_data);
 	}
+
+	AudioFile& operator= (AudioFile&& other) noexcept
+	{
+		if (this != &other)
+		{
+			numChannels = std::move(other.numChannels);
+			sampleRate = std::move(other.sampleRate);
+			bitsPerSample = std::move(other.bitsPerSample);
+			dataSize = std::move(other.dataSize);
+			data = std::move(other.data);
+		}
+		return *this;
+	}
 };

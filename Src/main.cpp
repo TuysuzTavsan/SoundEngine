@@ -55,11 +55,11 @@ int main()
 
     
 
-    wav1 = AudioLoader::Loadwav("Resources/DoctorWho.wav"); // Priestess
-    wav2 = AudioLoader::Loadwav("Resources/Priestess.wav");
+    std::unique_ptr<AudioFile> wav1 = AudioLoader::Load("Resources/DoctorWho.wav"); // Priestess
+    std::unique_ptr<AudioFile> wav2 = AudioLoader::Load("Resources/Priestess.wav");
     SampleBuffer buffer;
-    buffer.wav1 = wav1;
-    buffer.wav2 = wav2;
+    buffer.wav1 = wav1.get();
+    buffer.wav2 = wav2.get();
 
     PaStream* stream;
 
@@ -141,12 +141,21 @@ static int patestCallback(const void* inputBuffer, void* outputBuffer,
             index = 0;
         }
 
-        std::memcpy(out++, data->wav1->data.get() + index * 2, data->wav1->bitsPerSample / 8);
-        std::memcpy(out++, data->wav1->data.get() + index * 2, data->wav1->bitsPerSample / 8);
+        std::int16_t tempData[4];
+        std::memcpy(&tempData[0], data->wav1->data.get() + index * 2, data->wav1->bitsPerSample / 8);
+        std::memcpy(&tempData[1], data->wav1->data.get() + index * 2, data->wav1->bitsPerSample / 8);
+        std::memcpy(&tempData[2], data->wav2->data.get() + index * 2, data->wav2->bitsPerSample / 8);
+        std::memcpy(&tempData[3], data->wav2->data.get() + index * 2, data->wav2->bitsPerSample / 8);
 
-        /**out++ = (data->wav1->data.get()[index] * 0.0) + (data->wav2->data.get()[index] * 0.6f);
-        *out++ = (data->wav1->data.get()[index + 1] * 0.0) + (data->wav2->data.get()[index + 1] * 0.6f);*/
+        //std::memcpy(out++, data->wav1->data.get() + index * 2, data->wav1->bitsPerSample / 8);
+        //std::memcpy(out++, data->wav1->data.get() + index * 2, data->wav1->bitsPerSample / 8);
+
+        //*out++ = (data->wav1->data.get()[index] * 0.0) + (data->wav2->data.get()[index] * 0.6f);
+        //*out++ = (data->wav1->data.get()[index + 1] * 0.0) + (data->wav2->data.get()[index + 1] * 0.6f);
         
+        *out++ = tempData[0] * 0.3 + tempData[2] * 0.4;
+        *out++ = tempData[1] * 0.3 + tempData[3] * 0.4;
+
         index += 2;
         
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <assert.h>
+#include <stdexcept>
 #include <utility>
 
 /*
@@ -13,24 +13,26 @@ Otherwise you might cause seg fault or read a std::moved memory.
 template<typename T>
 struct RingBuffer
 {
-	
-	static const CAPACITY = 255; /* static constant buffer size. */
+private:
+	static const std::uint8_t CAPACITY = 255; /* static constant buffer size. */
 
 	std::uint8_t head;	/* Index to consume an item.*/
 	std::uint8_t tail;	/* Index to insert an item.*/
 	T buffer[CAPACITY];	/* Data buffer which has the size of CAPACITY constant. see RingBuffer::CAPACITY*/
 
+public:
+
 	RingBuffer()
 		:
 		head{ 0 },
 		tail{ 0 },
-		buffer{ 0 }
+		buffer{}
 	{
 
 	}
 
 	/*
-	Will return false if there are not pending request.
+	Will return false if there are not item available.
 	Otherwise true.
 	*/
 	bool AnyItem()
@@ -43,7 +45,8 @@ struct RingBuffer
 	*/
 	void Insert(const T item)
 	{
-		assert((tail + 1) % CAPACITY != head && "Request overflow! See MAX_REQUEST.");
+		if ((tail + 1) % CAPACITY != head)
+			throw std::logic_error("Request overflow! See MAX_REQUEST.");
 		
 		buffer[tail] = item;
 		tail = (tail + 1) % CAPACITY;
@@ -55,11 +58,12 @@ struct RingBuffer
 	*/
 	T Pop()
 	{
-		assert(head != tail && "Nothing to pop. See AnyPending method!");
+		if (head != tail)
+			throw std::logic_error("Nothing to pop. See AnyPending method!");
 
 		T temp = std::move(buffer[head]);
 		head = (head + 1) % CAPACITY;
-		return T;
+		return temp;
 	}
 
 };

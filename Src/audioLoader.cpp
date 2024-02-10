@@ -8,7 +8,7 @@
 Function will load and return a pointer to the generic AudioFile struct.
 if loading fails for any reason it will return nullptr.
 */
-AudioFile* AudioLoader::Loadwav(const char* path)
+std::unique_ptr<AudioFile> AudioLoader::Loadwav(const std::string& path)
 {
 	std::ifstream file;
 	file.open(path, std::ios::in | std::ios::binary);
@@ -80,12 +80,25 @@ findData:
 	file.close();
 
 	// load wav file info to the generic AudioFile.
-	AudioFile* audio = new AudioFile(wav->format.NumChannels,
+	std::unique_ptr<AudioFile> audio{ new AudioFile(wav->format.NumChannels,
 		wav->format.SampleRate,
 		wav->format.BitsPerSample,
 		wav->data.SubChunk2Size,
-		wav->data.Data);
+		wav->data.Data) };
 
-	return audio;
+	return std::move(audio);
 
+}
+
+std::unique_ptr<AudioFile> AudioLoader::Load(const std::string& path)
+{
+	size_t extensionIndex = path.find_last_of(".");
+	std::string extension = path.substr(extensionIndex + 1, path.size() - extensionIndex);
+
+	if (extension == "wav")
+		return std::move(AudioLoader::Loadwav(path));
+
+
+	throw std::logic_error("Format unknown.");
+	
 }
