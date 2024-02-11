@@ -16,6 +16,17 @@
 #include <memory>
 
 /*
+PortAudio callback function that will be passed to PortAudio Library.
+This callback function will be called when PortAudio needs audio data to play.
+AudioManager will constantly check for request in ringbuffer.
+*/
+int patestCallback(const void* inputBuffer, void* outputBuffer,
+	unsigned long framesPerBuffer,
+	const PaStreamCallbackTimeInfo* timeInfo,
+	PaStreamCallbackFlags statusFlags,
+	void* userData);
+
+/*
 AudioManager is the high level manager of the audio.
 Application must have one instance of this manager.
 Any thread can safely request to play a sound.
@@ -32,7 +43,8 @@ private:
 	RingBuffer<AudioRequest> m_requestBuffer;
 	PaStream* m_stream = nullptr;
 	std::mutex m_mutex;
-	std::vector<AudioData> m_activeAudios;
+	static std::vector<AudioData> m_activeAudios;
+	bool m_streamFlag = false;
 
 
 	/*
@@ -50,16 +62,6 @@ private:
 	*/
 	bool StopStream();
 
-	/*
-	PortAudio callback function that will be passed to PortAudio Library.
-	This callback function will be called when PortAudio needs audio data to play.
-	AudioManager will constantly check for request in ringbuffer.
-	*/
-	int static patestCallback(const void* inputBuffer, void* outputBuffer,
-		unsigned long framesPerBuffer,
-		const PaStreamCallbackTimeInfo* timeInfo,
-		PaStreamCallbackFlags statusFlags,
-		void* userData);
 
 public:
 
@@ -92,4 +94,4 @@ public:
 
 };
 
-const std::uint32_t AudioManager::m_SAMPLERATE = 44100;
+

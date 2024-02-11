@@ -37,7 +37,7 @@ public:
 	*/
 	bool AnyItem()
 	{
-		return (head == tail);
+		return (head == tail ? false : true);
 	}
 
 	/*
@@ -45,7 +45,7 @@ public:
 	*/
 	void Insert(const T item)
 	{
-		if ((tail + 1) % CAPACITY != head)
+		if ((tail + 1) % CAPACITY == head)
 			throw std::logic_error("Request overflow! See MAX_REQUEST.");
 		
 		buffer[tail] = item;
@@ -58,9 +58,8 @@ public:
 	*/
 	T Pop()
 	{
-		if (head != tail)
+		if (head == tail)
 			throw std::logic_error("Nothing to pop. See AnyPending method!");
-
 		T temp = std::move(buffer[head]);
 		head = (head + 1) % CAPACITY;
 		return temp;
