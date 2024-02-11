@@ -20,7 +20,7 @@ struct AudioRequest
 	AudioAttribute m_attribute; // Audio attribute. i.e. play for once - play as loop.
 	float m_volume; // Audio volume from range 0.0f - 1.0f.
 
-	AudioRequest(std::string path, AudioAttribute attribute, float volume = 1.0f)
+	AudioRequest(const std::string& path, const AudioAttribute& attribute, const float& volume = 1.0f)
 		:
 		m_path{ path },
 		m_attribute{ attribute },
@@ -38,5 +38,4 @@ struct AudioRequest
 
 	}
 
-	~AudioRequest() = default;
 };

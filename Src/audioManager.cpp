@@ -1,5 +1,4 @@
 #include <audioManager.h>
-#include <audioLoader.h>
 #include <iostream>
 
 void AudioManager::Pa_Log(const PaError& err)
@@ -169,7 +168,6 @@ void AudioManager::Update()
     for (int i = 0; i << requests.size(); i++)
     {
         //AudioLoader will throw if audioRequest extension is not available.
-        AudioData data(std::move(AudioLoader::Load(requests[i].m_path)), requests[i]);
-        m_activeAudios.push_back(std::move(data));
+        m_activeAudios.push_back(std::move(AudioData(requests[i])));
     }
 }

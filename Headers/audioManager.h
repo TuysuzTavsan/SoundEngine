@@ -1,52 +1,19 @@
 #pragma once
 
 
-#include <ringBuffer.h>
+
 #include <PortAudio/portaudio.h>
 #include <audioFile.h>
 #include <audioRequest.h>
+#include <audioLoader.h>
+#include <audioData.h>
+#include <ringBuffer.h>
 
 #include<cstdint>
 #include <mutex>
 #include <vector>
 #include <string>
 #include <memory>
-
-struct AudioData
-{
-	std::unique_ptr<AudioFile> m_audioFile;
-	float m_volume;
-	std::uint32_t m_offset;
-
-	AudioData(std::unique_ptr<AudioFile> audioFile, AudioRequest& request)
-		:
-		m_audioFile{std::move(audioFile)},
-		m_volume{ request.m_volume },
-		m_offset{ 0 }
-	{}
-
-	AudioData()
-	:
-	m_audioFile{nullptr},
-	m_volume{1},
-	m_offset{0}
-	{}
-
-	AudioData& operator=(AudioData&& other) noexcept
-	{
-		if (this != &other)
-		{
-			m_audioFile = std::move(other.m_audioFile);
-			m_volume = std::move(other.m_volume);
-			m_offset = std::move(other.m_offset);
-		}
-		return *this;
-	}
-
-	AudioData& operator=(const AudioData& other) = delete;
-	
-	~AudioData() = default;
-};
 
 /*
 AudioManager is the high level manager of the audio.

@@ -86,7 +86,7 @@ findData:
 		wav->data.SubChunk2Size,
 		wav->data.Data) };
 
-	return std::move(audio);
+	return (audio);
 
 }
 
@@ -96,7 +96,7 @@ std::unique_ptr<AudioFile> AudioLoader::Load(const std::string& path)
 	std::string extension = path.substr(extensionIndex + 1, path.size() - extensionIndex);
 
 	if (extension == "wav")
-		return std::move(AudioLoader::Loadwav(path));
+		return (AudioLoader::Loadwav(path));
 
 
 	throw std::logic_error("Format unknown.");

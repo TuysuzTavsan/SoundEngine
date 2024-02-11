@@ -47,5 +47,8 @@
     <ClInclude Include="Headers\audioRequest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\audioData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

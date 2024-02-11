@@ -29,6 +29,8 @@ struct AudioFile {
 
 	}
 
+	AudioFile(const AudioFile&) = delete;
+
 	AudioFile(const std::uint16_t& _numChannels,
 		const std::uint32_t& _sampleRate,
 		const std::uint16_t& _bitsPerSample,
