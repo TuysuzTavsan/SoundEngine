@@ -37,12 +37,16 @@ This class is thread safe.
 
 class AudioManager
 {
+public:
+	static std::mutex m_mutex2;
 private:
 
 	static const std::uint32_t m_SAMPLERATE;
 	RingBuffer<AudioRequest> m_requestBuffer;
 	PaStream* m_stream = nullptr;
 	std::mutex m_mutex;
+
+
 	static std::vector<AudioData> m_activeAudios;
 	bool m_streamFlag = false;
 

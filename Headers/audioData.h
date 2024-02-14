@@ -25,4 +25,9 @@ struct AudioData
 	{
 		m_audioFile = std::move(AudioLoader::Load(req.m_path));
 	}
+
+	bool IsOver() const
+	{
+		return (m_offset == m_audioFile->dataSize);
+	}
 };
